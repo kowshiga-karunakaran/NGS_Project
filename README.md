@@ -26,4 +26,21 @@ cd Project_SRA_data
 /home/hp/fastp -i ERR11468776_1.fastq.gz -I ERR11468776_2.fastq.gz -o ERR11468776_1_trimmed.fastq.gz -O ERR11468776_2_trimmed.fastq.gz
 /home/hp/fastp -i ERR11468777_1.fastq.gz -I ERR11468777_2.fastq.gz -o ERR11468777_1_trimmed.fastq.gz -O ERR11468777_2_trimmed.fastq.gz
 
+# Downloading Reference Genome
+mkdir project_ref_genoome
+wget https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr11.fa.gz
+wget https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr12.fa.gz
+wget https://hgdownload.soe.ucsc.edu/goldenPath/hg38/chromosomes/chr16.fa.gz
+gunzip chr11.fa.gz
+gunzip chr12.fa.gz
+gunzip chr16.fa.gz
 
+# Install bwa
+git clone https://github.com/lh3/bwa.git
+cd bwa; make
+
+# build index
+cd project_ref_genome
+/home/hp/bwa/bwa index chr11.fa
+/home/hp/bwa/bwa index chr12.fa
+/home/hp/bwa/bwa index chr16.fa

@@ -98,7 +98,15 @@ gatk ApplyBQSR -R project_ref_genome/chr11.fa -I P_mapping_qc/sam1_rg.sam --bqsr
 gatk ApplyBQSR -R project_ref_genome/chr11.fa -I P_mapping_qc/sam2_rg.sam --bqsr-recal-file P_recal/sample2_recal_data.table -O P_recal/sample2_recal.bam
 gatk ApplyBQSR -R project_ref_genome/chr11.fa -I P_mapping_qc/sam3_rg.sam --bqsr-recal-file P_recal/sample3_recal_data.table -O P_recal/sample3_recal.bam
 
-#
+samtools index P_recal/sample1_recal.bam
+samtools index P_recal/sample1_recal.bam
+samtools index P_recal/sample1_recal.bam
+
+# Somatic variant calling - Mutect2
+gatk Mutect2 -I P_recal/sample1_recal.bam -R project_ref_genome/chr11.fa -O P_somatic_variants/sample1.vcf.gz
+gatk Mutect2 -I P_recal/sample2_recal.bam -R project_ref_genome/chr11.fa -O P_somatic_variants/sample2.vcf.gz
+gatk Mutect2 -I P_recal/sample3_recal.bam -R project_ref_genome/chr11.fa -O P_somatic_variants/sample3.vcf.gz
+
 
 
 

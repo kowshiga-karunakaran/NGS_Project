@@ -55,7 +55,51 @@ mkdir project_read_mapping
 docker pull broadinstitute/gatk:latest
 docker run -it -v $PWD:/data/ broadinstitute/gatk:latest
 
-# 
+# sorting sam files
+gatk SortSam -I project_read_mapping/P_sample1.sam -O P_bam_files/P_sample1_sorted.bam -SORT_ORDER coordinate
+gatk SortSam -I project_read_mapping/P_sample2.sam -O P_bam_files/P_sample2_sorted.bam -SORT_ORDER coordinate
+gatk SortSam -I project_read_mapping/P_sample3.sam -O P_bam_files/P_sample3_sorted.bam -SORT_ORDER coordinate
+
+# Mark Duplicates
+gatk MarkDuplicates I=P_bam_files/P_sample1_sorted.bam O=P_bam_files/sampple1_marked_duplicates.bam M=P_bam_files/sample1_marked_dup_metrics.txt
+gatk MarkDuplicates I=P_bam_files/P_sample2_sorted.bam O=P_bam_files/sampple2_marked_duplicates.bam M=P_bam_files/sample2_marked_dup_metrics.txt
+gatk MarkDuplicates I=P_bam_files/P_sample3_sorted.bam O=P_bam_files/sampple3_marked_duplicates.bam M=P_bam_files/sample3_marked_dup_metrics.txt
+
+# BQSR
+# download the file 
+wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf
+gatk IndexFeatureFile --input read_mapping/Homo_sapiens_assembly38.dbsnp138.vcf
+
+# create ref genome index using samtools
+samtools faidx ref_genome/chr11.fa
+samtools faidx ref_genome/chr12.fa
+samtools faidx ref_genome/chr16.fa
+## create dict file
+gatk CreateSequenceDictionary -R ref_gemone/chr11.fa
+gatk CreateSequenceDictionary -R ref_gemone/chr12.fa
+gatk CreateSequenceDictionary -R ref_gemone/chr16.fa
+
+# add read group info
+gatk AddOrReplaceReadGroups I= P_bam_files/sample1_marked_duplicates.bam  O= P_mapping_qc/sam1_rg.sam RGID=sam1 RGLB=sam1 RGPL=ILLUMINA RGPU=unit1 RGSM=20 
+gatk AddOrReplaceReadGroups I= P_bam_files/sample2_marked_duplicates.bam  O= P_mapping_qc/sam2_rg.sam RGID=sam2 RGLB=sam2 RGPL=ILLUMINA RGPU=unit1 RGSM=20 
+gatk AddOrReplaceReadGroups I= P_bam_files/sample3_marked_duplicates.bam  O= P_mapping_qc/sam3_rg.sam RGID=sam3 RGLB=sam3 RGPL=ILLUMINA RGPU=unit1 RGSM=20 
+
+# extract records from chr1 alone using bed file
+samtools view -L P_bam_files/P_bed_files.bed P_bam_files/P_sample1_sorted.bam -o P_bam_files/sample1_chr11_bamfile.bam
+samtools view -L P_bam_files/P_bed_files.bed P_bam_files/P_sample2_sorted.bam -o P_bam_files/sample2_chr11_bamfile.bam
+samtools view -L P_bam_files/P_bed_files.bed P_bam_files/P_sample3_sorted.bam -o P_bam_files/sample3_chr11_bamfile.bam
+
+# BQSR
+gatk BaseRecalibrator -I P_mapping_qc/sam1_rg.sam -R project_ref_genome/chr11.fa --known-sites read_mapping/Homo_sapiens_assembly38.dbsnp138.vcf -O P_recal/sample1_recal_data.table
+gatk BaseRecalibrator -I P_mapping_qc/sam1_rg.sam -R project_ref_genome/chr11.fa --known-sites read_mapping/Homo_sapiens_assembly38.dbsnp138.vcf -O P_recal/sample2_recal_data.table
+gatk BaseRecalibrator -I P_mapping_qc/sam1_rg.sam -R project_ref_genome/chr11.fa --known-sites read_mapping/Homo_sapiens_assembly38.dbsnp138.vcf -O P_recal/sample3_recal_data.table
+
+gatk ApplyBQSR -R project_ref_genome/chr11.fa -I P_mapping_qc/sam1_rg.sam --bqsr-recal-file P_recal/sample1_recal_data.table -O P_recal/sample1_recal.bam
+gatk ApplyBQSR -R project_ref_genome/chr11.fa -I P_mapping_qc/sam2_rg.sam --bqsr-recal-file P_recal/sample2_recal_data.table -O P_recal/sample2_recal.bam
+gatk ApplyBQSR -R project_ref_genome/chr11.fa -I P_mapping_qc/sam3_rg.sam --bqsr-recal-file P_recal/sample3_recal_data.table -O P_recal/sample3_recal.bam
+
+#
+
 
 
 

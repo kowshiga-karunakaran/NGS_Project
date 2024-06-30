@@ -44,3 +44,18 @@ cd project_ref_genome
 /home/hp/bwa/bwa index chr11.fa
 /home/hp/bwa/bwa index chr12.fa
 /home/hp/bwa/bwa index chr16.fa
+
+# Read mapping
+mkdir project_read_mapping
+/home/hp/bwa/bwa mem -t 5 project_ref_genome/chr11.fa Project_SRA_data/ERR11468775_1_trimmed.fastq.gz Project_SRA_data/ERR11468775_2_trimmed.fastq.gz > project_read_mapping/P_sample1.sam
+/home/hp/bwa/bwa mem -t 5 project_ref_genome/chr11.fa Project_SRA_data/ERR11468776_1_trimmed.fastq.gz Project_SRA_data/ERR11468776_2_trimmed.fastq.gz > project_read_mapping/P_sample2.sam
+/home/hp/bwa/bwa mem -t 5 project_ref_genome/chr11.fa Project_SRA_data/ERR11468777_1_trimmed.fastq.gz Project_SRA_data/ERR11468777_2_trimmed.fastq.gz > project_read_mapping/P_sample3.sam
+
+# install Docker - gatk
+docker pull broadinstitute/gatk:latest
+docker run -it -v $PWD:/data/ broadinstitute/gatk:latest
+
+# 
+
+
+

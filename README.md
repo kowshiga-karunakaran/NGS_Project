@@ -71,13 +71,13 @@ wget https://storage.googleapis.com/gcp-public-data--broad-references/hg38/v0/Ho
 gatk IndexFeatureFile --input read_mapping/Homo_sapiens_assembly38.dbsnp138.vcf
 
 # create ref genome index using samtools
-samtools faidx ref_genome/chr11.fa
-samtools faidx ref_genome/chr12.fa
-samtools faidx ref_genome/chr16.fa
+samtools faidx project_ref_genome/chr11.fa
+samtools faidx project_ref_genome/chr12.fa
+samtools faidx project_ref_genome/chr16.fa
 ## create dict file
-gatk CreateSequenceDictionary -R ref_gemone/chr11.fa
-gatk CreateSequenceDictionary -R ref_gemone/chr12.fa
-gatk CreateSequenceDictionary -R ref_gemone/chr16.fa
+gatk CreateSequenceDictionary -R project_ref_ref_gemone/chr11.fa
+gatk CreateSequenceDictionary -R project_ref_ref_gemone/chr12.fa
+gatk CreateSequenceDictionary -R project_ref_ref_gemone/chr16.fa
 
 # add read group info
 gatk AddOrReplaceReadGroups I= P_bam_files/sample1_marked_duplicates.bam  O= P_mapping_qc/sam1_rg.sam RGID=sam1 RGLB=sam1 RGPL=ILLUMINA RGPU=unit1 RGSM=20 
